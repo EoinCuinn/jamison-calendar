@@ -21,16 +21,19 @@ const server = http.createServer((req, res) => {
       res.writeHead(400); res.end('Bad path'); return;
     }
     const target = API_BASE + apiPath;
+    console.log('Proxy ->', target.substring(0, 120));
     https.get(target, {
       headers: {
-        'Accept':   'application/json',
-        'Token':    '',
-        'Language': 'en'
+        'Accept':        'application/json',
+        'Content-Type':  'application/json',
+        'Token':         '',
+        'Language':      'en'
       }
     }, (apiRes) => {
       let body = '';
       apiRes.on('data', chunk => { body += chunk; });
       apiRes.on('end', () => {
+        console.log('Proxy <-', apiRes.statusCode, apiPath.substring(0, 60));
         res.writeHead(apiRes.statusCode, {
           'Content-Type':                'application/json',
           'Access-Control-Allow-Origin': '*',
