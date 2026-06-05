@@ -1,0 +1,32 @@
+name: Refresh availability data
+
+on:
+  schedule:
+    - cron: '0 14 * * *'   # 00:00 AEST (UTC+10) every night
+  workflow_dispatch:         # also allow manual trigger from GitHub UI
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # needed to push the updated index.html
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate fresh index.html
+        run: node generate.js
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --staged --quiet && echo "No changes" || (
+            git commit -m "Refresh availability data $(date -u +%Y-%m-%d)"
+            git push
+          )
