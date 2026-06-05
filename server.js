@@ -1,50 +1,45 @@
 'use strict';
 
-const http  = require('http');
-const https = require('https');
-const fs    = require('fs');
-const path  = require('path');
-const url   = require('url');
+const http = require('http');
+const fs   = require('fs');
+const path = require('path');
 
 const PORT     = process.env.PORT || 3000;
 const API_BASE = 'https://mybookings.penrith.city/bookingportal/';
+const HTML     = fs.readFileSync(path.join(__dirname, 'index.html'));
 
-const HTML = fs.readFileSync(path.join(__dirname, 'index.html'));
-
-const server = http.createServer((req, res) => {
-  const parsed = url.parse(req.url, true);
+const server = http.createServer(async (req, res) => {
+  const reqUrl = new URL(req.url, 'http://localhost');
 
   // Proxy: /proxy?path=api/assets/invoke?...
-  if (parsed.pathname === '/proxy') {
-    const apiPath = parsed.query.path;
+  if (reqUrl.pathname === '/proxy') {
+    const apiPath = reqUrl.searchParams.get('path');
     if (!apiPath || !apiPath.startsWith('api/')) {
-      res.writeHead(400); res.end('Bad path'); return;
+      res.writeHead(400); res.end('Bad request'); return;
     }
     const target = API_BASE + apiPath;
-    console.log('Proxy ->', target.substring(0, 120));
-    https.get(target, {
-      headers: {
-        'Accept':        'application/json',
-        'Content-Type':  'application/json',
-        'Token':         '',
-        'Language':      'en'
-      }
-    }, (apiRes) => {
-      let body = '';
-      apiRes.on('data', chunk => { body += chunk; });
-      apiRes.on('end', () => {
-        console.log('Proxy <-', apiRes.statusCode, apiPath.substring(0, 60));
-        res.writeHead(apiRes.statusCode, {
-          'Content-Type':                'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Cache-Control':               'no-store'
-        });
-        res.end(body);
+    console.log('->', target.substring(0, 120));
+    try {
+      const apiRes = await fetch(target, {
+        headers: {
+          'Accept':       'application/json',
+          'Content-Type': 'application/json',
+          'Token':        '',
+          'Language':     'en'
+        }
       });
-    }).on('error', err => {
+      const body = await apiRes.text();
+      console.log('<-', apiRes.status, apiPath.substring(0, 80));
+      res.writeHead(apiRes.status, {
+        'Content-Type':                'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control':               'no-store'
+      });
+      res.end(body);
+    } catch (err) {
       console.error('Proxy error:', err.message);
       res.writeHead(502); res.end('Proxy error: ' + err.message);
-    });
+    }
     return;
   }
 
