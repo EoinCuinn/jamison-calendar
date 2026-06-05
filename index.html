@@ -111,16 +111,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   text-align:center;border:1px solid #2d2d4e;white-space:nowrap;
   position:sticky;top:-1px;z-index:10;
 }
-#calendar thead th.fac-col{text-align:left;min-width:140px}
+#calendar thead th.fac-col{text-align:left;min-width:140px;position:sticky;left:0;z-index:20;background:#1a1a2e}
 #calendar thead th.today-col{background:#1a4a7a;color:#fff}
 #calendar tbody td{border:1px solid #e0e5ef;vertical-align:top;padding:3px}
 #calendar tbody td.fac-cell{
   background:#fff;padding:5px 7px;font-size:11px;font-weight:500;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;color:#1a1a2e;
+  position:sticky;left:0;z-index:5;
 }
 .cat-tag{font-size:10px;color:#999;display:block;margin-top:1px;font-weight:400}
 #calendar tbody tr:hover td{background:#f7f9ff}
-#calendar tbody tr:hover td.fac-cell{background:#eef2ff}
+#calendar tbody tr:hover td.fac-cell{background:#eef2ff;z-index:6}
 .cat-row td{
   background:#e8eef8!important;padding:4px 10px;
   font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
@@ -178,8 +179,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   /* Tighter calendar */
   #calendar-wrap{padding:0 0 calc(8px + env(safe-area-inset-bottom, 0px))}
-  #calendar thead th.fac-col{min-width:90px}
-  #calendar tbody td.fac-cell{max-width:90px;font-size:10px;padding:4px 5px}
+  #calendar thead th.fac-col{min-width:80px}
+  #calendar tbody td.fac-cell{
+    max-width:90px;min-width:80px;font-size:10px;padding:4px 5px;
+    white-space:normal;overflow:visible;text-overflow:unset;word-break:break-word;
+  }
   .cat-tag{display:none}
 }
 </style>
@@ -229,7 +233,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="legend-item"><div class="dot dot-prelim"></div>Tentative</div>
       </div>
 
-      <span id="data-note">Updated 2026-06-05T06:38:22.705Z</span>
+      <span id="data-note">Updated 2026-06-05T06:41:49.832Z</span>
     </div>
 
     <div id="calendar-wrap">
