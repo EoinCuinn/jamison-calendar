@@ -171,10 +171,9 @@ async function apiFetch(path, signal) {
   const res = await fetch(API_BASE + path, {
     method: 'GET',
     headers: {
-      'Accept':       'application/json',
-      'Content-Type': 'application/json',
-      'Token':        '',
-      'Language':     'en'
+      'Accept':   'application/json',
+      'Token':    '',
+      'Language': 'en'
     },
     signal
   });
