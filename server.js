@@ -18,7 +18,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(400); res.end('Bad request'); return;
     }
     const target = API_BASE + apiPath;
-    console.log('->', target.substring(0, 120));
+    console.log('REQ:', target);
     try {
       const apiRes = await fetch(target, {
         headers: {
@@ -29,7 +29,7 @@ const server = http.createServer(async (req, res) => {
         }
       });
       const body = await apiRes.text();
-      console.log('<-', apiRes.status, apiPath.substring(0, 80));
+      console.log('RES:', apiRes.status, '| body[0:200]:', body.substring(0, 200));
       res.writeHead(apiRes.status, {
         'Content-Type':                'application/json',
         'Access-Control-Allow-Origin': '*',
@@ -37,7 +37,7 @@ const server = http.createServer(async (req, res) => {
       });
       res.end(body);
     } catch (err) {
-      console.error('Proxy error:', err.message);
+      console.error('ERR:', err.message);
       res.writeHead(502); res.end('Proxy error: ' + err.message);
     }
     return;
